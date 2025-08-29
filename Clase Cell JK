@@ -1,0 +1,172 @@
+public class Cell {
+    private String color;      // Color de la celda
+    private boolean hole;      // Indica si tiene agujero
+    private String marbel;     // Color de la canica (si hay)
+    private int positionX;     // Posición X de la celda
+    private int positionY;     // Posición Y de la celda
+
+    private Rectangle background; 
+    private Rectangle cell;       
+    private Circle holeShape;
+    private Circle marbleShape;
+
+    // 🔹 Constructor
+    public Cell(String color, boolean hole) {
+        this.color = color;
+        this.hole = hole;
+        this.marbel = null; // Por defecto, sin canica
+
+        this.positionX = 0; 
+        this.positionY = 0;
+
+        // 1️⃣ Fondo
+        background = new Rectangle();
+        background.changeColor("black");
+        background.changeSize(50, 50);
+        background.setPosition(positionX, positionY);
+        background.makeVisible();
+
+        // 2️⃣ Celda
+        cell = new Rectangle();
+        cell.changeColor(color);
+        cell.changeSize(40, 40);
+        cell.setPosition(5, 5);
+        cell.makeVisible();
+
+        // 3️⃣ Agujero (si aplica)
+        if (hole) {
+            holeShape = new Circle();
+            holeShape.changeColor("white");
+            holeShape.changeSize(30);
+            holeShape.setPosition(10, 10);
+            holeShape.makeVisible();
+        }
+    }
+    
+    // 🔹 Saber si la celda tiene un agujero
+    public boolean hasHole() {
+        return hole;
+    }
+    
+    // 🔹 Meter una canica (siempre entra)
+    public void in(String marbel) {
+        this.marbel = marbel;
+    }
+    
+    // 🔹 Obtener el color de la canica (si hay)
+    public String getMarbleColor() {
+        return this.marbel;
+    }
+
+    // 🔹 Sacar la canica (solo si no hay agujero)
+    public String out() {
+        if (this.marbel != null) {
+            if (!hole) { 
+                String color = this.marbel;
+                this.marbel = null;
+                return color;
+            } else {
+                // Si hay agujero, la canica queda atrapada
+                return "";
+            }
+        }
+        return ""; // No había canica
+    }
+    
+    // 🔹 Verificar si la celda está en estado correcto
+    public boolean isOK() {
+        if (!hole) {
+            // ✅ No hay agujero → siempre correcto
+            return true;
+        }
+    
+        if (marbel == null) {
+            // ✅ Agujero vacío → correcto
+            return true;
+        }
+    
+        // ⚠️ Agujero ocupado → verificamos color
+        return marbel.equals(color);
+    }
+    
+    // 🔹 Verificar si la celda tiene una canica
+    public boolean hasMarbel() {
+        return marbel != null;
+    }
+    
+    // 🔹 Mover toda la celda en una dirección
+    public void moveTo(String direction) {
+        int step = 45; // tamaño de la casilla en píxeles
+        int dx = 0;
+        int dy = 0;
+    
+        switch (direction.toLowerCase()) {
+            case "up":
+                dy = -step;
+                break;
+            case "down":
+                dy = step;
+                break;
+            case "left":
+                dx = -step;
+                break;
+            case "right":
+                dx = step;
+                break;
+            default:
+                System.out.println("Dirección no válida. Usa: up, down, left, right");
+                return;
+        }
+    
+        // 🔹 Actualizar posiciones lógicas
+        positionX += dx;
+        positionY += dy;
+    
+        // 🔹 Mover representaciones gráficas
+        background.moveHorizontal(dx);
+        background.moveVertical(dy);
+    
+        cell.moveHorizontal(dx);
+        cell.moveVertical(dy);
+    
+        if (holeShape != null) {
+            holeShape.moveHorizontal(dx);
+            holeShape.moveVertical(dy);
+        }
+    
+        if (marbleShape != null) {
+            marbleShape.moveHorizontal(dx);
+            marbleShape.moveVertical(dy);
+        }
+    }
+    
+    
+        // 🔹 Hacer visible toda la celda (incluyendo fondo, celda, agujero y canica si existe)
+    public void makeVisible() {
+        background.makeVisible();
+        cell.makeVisible();
+        
+        if (holeShape != null) {
+            holeShape.makeVisible();
+        }
+        
+        if (marbleShape != null) {
+            marbleShape.makeVisible();
+        }
+    }
+
+    // 🔹 Hacer invisible toda la celda
+    public void makeInvisible() {
+        background.makeInvisible();
+        cell.makeInvisible();
+        
+        if (holeShape != null) {
+            holeShape.makeInvisible();
+        }
+        
+        if (marbleShape != null) {
+            marbleShape.makeInvisible();
+        }
+    }
+
+}
